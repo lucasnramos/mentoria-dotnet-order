@@ -1,4 +1,10 @@
 
+using Authentication.Adapter.Configurations;
+using Authentication.Adapter.Extensions;
+using Marraia.Notifications.Configurations;
+using Microsoft.Extensions.Options;
+using StackExchange.Redis;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
