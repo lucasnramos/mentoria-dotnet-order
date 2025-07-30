@@ -1,9 +1,10 @@
 using System;
+using Marraia.MongoDb.Core;
 using Order.Domain.Entities.ValueObjects;
 
 namespace Order.Domain.Entities;
 
-public class Orders
+public class Orders : Entity<Guid>
 {
     public Orders(CustomerValueObjects customer)
     {
@@ -13,7 +14,7 @@ public class Orders
     }
 
     public Guid Id { get; }
-    public string Number { get; }
+    public string Number { get; private set; }
     public string Status { get; }
     public DateTime Date { get; }
     public CustomerValueObjects Customer { get; }
@@ -23,5 +24,16 @@ public class Orders
     public void AddCartItem(CartValueObject cartItem)
     {
         CartItems.Add(cartItem);
+    }
+
+    public void CreateOrderNumber()
+    {
+        var id = Id.ToString("N").Split('-').Last();
+        Number = $"ORD-{Date:yyyyMMddHHmmss}-{id}";
+    }
+
+    public void CalculateTotalAmount()
+    {
+        TotalAmount = CartItems.Sum(item => item.Price * item.Quantity);
     }
 }
