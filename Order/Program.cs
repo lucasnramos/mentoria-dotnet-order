@@ -1,8 +1,13 @@
 
 using Authentication.Adapter.Configurations;
 using Authentication.Adapter.Extensions;
+using Marraia.MongoDb.Configurations;
 using Marraia.Notifications.Configurations;
 using Microsoft.Extensions.Options;
+using Order.Core.Repositories;
+using Order.Core.Repositories.Interfaces;
+using Order.Core.Services.Application;
+using Order.Core.Services.Application.Interfaces;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,8 +28,10 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetSection("Redis:Configuration").Value;
 });
 
-// builder.Services.AddScoped<IProductAppService, ProductAppService>();
-// builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddMongoDb();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderAppService, OrderAppService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddCors(options =>

@@ -7,4 +7,5 @@ public interface IOrderAppService
 {
     Task<Orders> CreateOrderAsync(OrderInput orderInput);
     Task<Orders> GetOrderByNumberAsync(string orderNumber);
+    Task<IEnumerable<Orders>> GetAllOrdersAsync();
 }

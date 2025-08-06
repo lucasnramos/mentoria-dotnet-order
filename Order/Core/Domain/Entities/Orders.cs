@@ -13,7 +13,6 @@ public class Orders : Entity<Guid>
         Customer = customer ?? throw new ArgumentNullException(nameof(customer));
     }
 
-    public Guid Id { get; }
     public string Number { get; private set; }
     public string Status { get; }
     public DateTime Date { get; }
@@ -29,7 +28,7 @@ public class Orders : Entity<Guid>
     public void CreateOrderNumber()
     {
         var id = Id.ToString("N").Split('-').Last();
-        Number = $"ORD-{Date:yyyyMMddHHmmss}-{id}";
+        Number = $"ORD-{Date:yyyyMMddHHmm}-{id}";
     }
 
     public void CalculateTotalAmount()

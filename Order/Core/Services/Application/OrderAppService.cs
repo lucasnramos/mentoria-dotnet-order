@@ -32,6 +32,11 @@ public class OrderAppService : IOrderAppService
         return order;
     }
 
+    public async Task<IEnumerable<Orders>> GetAllOrdersAsync()
+    {
+        return await _orderRepository.GetAllAsync();
+    }
+
     public async Task<Orders> GetOrderByNumberAsync(string orderNumber)
     {
         return await _orderRepository.GetByNumberAsync(orderNumber);
