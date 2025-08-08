@@ -10,20 +10,20 @@ public class OrderAppService : IOrderAppService
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public OrderAppService(IOrderRepository orderRepository, IProductRepository productRepository)
+    public OrderAppService(IOrderRepository orderRepository,
+                           IProductRepository productRepository,
+                           IHttpContextAccessor httpContextAccessor)
     {
         _productRepository = productRepository;
         _orderRepository = orderRepository;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<Orders> CreateOrderAsync(OrderInput orderInput)
     {
-        var customer = new CustomerValueObjects
-        {
-            Name = "Default Customer",
-            Email = ""
-        };
+        var customer = GetLoggedCustomer();
 
         var order = new Orders(customer);
         InsertItemsToOrder(orderInput.CartItems, order);
@@ -59,4 +59,13 @@ public class OrderAppService : IOrderAppService
         }
     }
 
+    private CustomerValueObjects GetLoggedCustomer()
+    {
+        var customer = _httpContextAccessor.HttpContext?.User;
+        return new CustomerValueObjects
+        {
+            Name = customer?.FindFirst("unique_name")?.Value ?? "",
+            Email = customer?.FindFirst("email")?.Value ?? ""
+        };
+    }
 }

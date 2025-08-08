@@ -21,6 +21,7 @@ namespace Order.Core.Services.API
             _orderAppService = orderAppService;
         }
 
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -30,8 +31,9 @@ namespace Order.Core.Services.API
             return CreatedContent("/api/order", order);
         }
 
+        [Authorize]
         [HttpGet]
-        [Route("/saleOrder/{orderNumber}")]
+        [Route("saleOrder/{orderNumber}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetOrderByNumberAsync([FromRoute] string orderNumber)
@@ -40,9 +42,8 @@ namespace Order.Core.Services.API
             return OkOrNotFound(order);
         }
 
-        // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
-        [Route("/sales")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllOrderAsync()
