@@ -65,8 +65,8 @@ public class OrderAppService : IOrderAppService
         var customer = _httpContextAccessor.HttpContext?.User;
         return new CustomerValueObjects
         {
-            Name = customer?.FindFirst("unique_name")?.Value ?? "",
-            Email = customer?.FindFirst("email")?.Value ?? ""
+            Name = customer?.Identity?.Name ?? "",
+            Email = customer?.FindFirst("name")?.Value ?? ""
         };
     }
 }
