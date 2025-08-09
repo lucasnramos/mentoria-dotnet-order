@@ -28,6 +28,7 @@ public class OrderAppService : IOrderAppService
         var order = new Orders(customer);
         InsertItemsToOrder(orderInput.CartItems, order);
         order.CreateOrderNumber();
+        order.CalculateTotalAmount();
         await _orderRepository.InsertAsync(order);
         return order;
     }

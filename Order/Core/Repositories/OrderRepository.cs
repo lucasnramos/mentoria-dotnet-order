@@ -1,6 +1,7 @@
 using System;
 using Marraia.MongoDb.Repositories;
 using Marraia.MongoDb.Repositories.Interfaces;
+using MongoDB.Driver;
 using Order.Core.Repositories.Interfaces;
 using Order.Domain.Entities;
 
@@ -15,6 +16,8 @@ public class OrderRepository : MongoDbRepositoryBase<Orders, Guid>, IOrderReposi
 
     public Task<Orders> GetByNumberAsync(string orderNumber)
     {
-        throw new NotImplementedException();
+        return Collection
+            .Find(x => x.Number == orderNumber)
+            .FirstOrDefaultAsync();
     }
 }
