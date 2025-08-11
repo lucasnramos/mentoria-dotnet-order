@@ -21,7 +21,7 @@ namespace Order.Core.Services.API
             _orderAppService = orderAppService;
         }
 
-        [Authorize]
+        // [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

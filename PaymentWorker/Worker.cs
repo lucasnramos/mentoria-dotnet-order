@@ -16,7 +16,7 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _disposable = _consumer.Start<OrderMessage>("messagebus.payment", async (message) =>
+        _disposable = _consumer.Start<OrderMessage>("messagebus.payment.eventhandler", async (message) =>
         {
             _logger.LogInformation("Received OrderMessage: {OrderId}, Customer: {CustomerName}, Email: {CustomerEmail}, Total: {TotalAmount}",
                 message.OrderId, message.CustomerName, message.CustomerEmail, message.TotalAmount);
