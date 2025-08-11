@@ -1,6 +1,8 @@
 
 using Authentication.Adapter.Configurations;
 using Authentication.Adapter.Extensions;
+using Marraia.Queue;
+using Marraia.Queue.Interfaces;
 using Marraia.MongoDb.Configurations;
 using Marraia.Notifications.Configurations;
 using Microsoft.Extensions.Options;
@@ -53,6 +55,9 @@ builder.Services.AddJwtSecurity(tokenConfigurations);
 #endregion
 
 builder.Services.AddSmartNotification();
+builder.Services.AddSingleton<IEventBus>(provider => new EventBus(builder.Configuration.GetSection("RabbitMq:Connection").Value,
+                                                        builder.Configuration.GetSection("RabbitMq:ExchangeName").Value,
+                                                        "direct"));
 
 // new RootBootstrapper().BootstrapperRegisterServices(builder.Services, builder.Configuration);
 var app = builder.Build();

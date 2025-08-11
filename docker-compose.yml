@@ -8,5 +8,14 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
       - data:/data/db
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbitmq
+      - RABBITMQ_DEFAULT_PASS=rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 volumes:
   data:

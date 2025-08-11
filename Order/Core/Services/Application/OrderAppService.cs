@@ -1,4 +1,6 @@
 using System;
+using Marraia.Queue.Interfaces;
+using Order.Core.Domain.Entities;
 using Order.Core.Repositories.Interfaces;
 using Order.Core.Services.Application.Interfaces;
 using Order.Domain.Entities;
@@ -11,14 +13,17 @@ public class OrderAppService : IOrderAppService
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IEventBus _eventBus;
 
     public OrderAppService(IOrderRepository orderRepository,
                            IProductRepository productRepository,
-                           IHttpContextAccessor httpContextAccessor)
+                           IHttpContextAccessor httpContextAccessor,
+                           IEventBus eventBus)
     {
         _productRepository = productRepository;
         _orderRepository = orderRepository;
         _httpContextAccessor = httpContextAccessor;
+        _eventBus = eventBus;
     }
 
     public async Task<Orders> CreateOrderAsync(OrderInput orderInput)
@@ -30,6 +35,15 @@ public class OrderAppService : IOrderAppService
         order.CreateOrderNumber();
         order.CalculateTotalAmount();
         await _orderRepository.InsertAsync(order);
+        var orderMessage = new OrderMessage
+        {
+            CustomerName = customer.Name,
+            CustomerEmail = customer.Email,
+            OrderId = order.Id.ToString(),
+            TotalAmount = order.TotalAmount
+        };
+        // TODO: messagebus from configuration
+        await _eventBus.PublishAsync(orderMessage, "messagebus.payment");
         return order;
     }
 
