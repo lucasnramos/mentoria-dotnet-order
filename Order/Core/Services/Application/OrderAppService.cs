@@ -14,36 +14,31 @@ public class OrderAppService : IOrderAppService
     private readonly IProductRepository _productRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IEventBus _eventBus;
+    private readonly IConfiguration _configuration;
 
     public OrderAppService(IOrderRepository orderRepository,
                            IProductRepository productRepository,
                            IHttpContextAccessor httpContextAccessor,
-                           IEventBus eventBus)
+                           IEventBus eventBus,
+                           IConfiguration configuration)
     {
         _productRepository = productRepository;
         _orderRepository = orderRepository;
         _httpContextAccessor = httpContextAccessor;
         _eventBus = eventBus;
+        _configuration = configuration;
     }
 
     public async Task<Orders> CreateOrderAsync(OrderInput orderInput)
     {
         var customer = GetLoggedCustomer();
-
         var order = new Orders(customer);
+
         InsertItemsToOrder(orderInput.CartItems, order);
         order.CreateOrderNumber();
         order.CalculateTotalAmount();
         await _orderRepository.InsertAsync(order);
-        var orderMessage = new OrderMessage
-        {
-            CustomerName = customer.Name,
-            CustomerEmail = customer.Email,
-            OrderId = order.Id.ToString(),
-            TotalAmount = order.TotalAmount
-        };
-        // TODO: messagebus from configuration
-        await _eventBus.PublishAsync(orderMessage, "messagebus.payment");
+        SendOrderMessage(order, customer);
         return order;
     }
 
@@ -82,5 +77,17 @@ public class OrderAppService : IOrderAppService
             Name = customer?.Identity?.Name ?? "",
             Email = customer?.FindFirst("name")?.Value ?? ""
         };
+    }
+
+    private async void SendOrderMessage(Orders order, CustomerValueObjects customer)
+    {
+        var orderMessage = new OrderMessage
+        {
+            CustomerName = customer.Name,
+            CustomerEmail = customer.Email,
+            OrderId = order.Id.ToString(),
+            TotalAmount = order.TotalAmount
+        };
+        await _eventBus.PublishAsync(orderMessage, _configuration.GetSection("RabbitMQ:QueuePayment").Value);
     }
 }
